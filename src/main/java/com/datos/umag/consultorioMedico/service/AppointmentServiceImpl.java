@@ -30,12 +30,11 @@ import java.util.List;
 
 public class AppointmentServiceImpl implements AppointmentService {
 
-    private AppointmentRepository appointmentRepository;
-    private AppointmentMapper appointmentMapper;
-    private PatientRepository patientRepository;
-    private ConsultRoomRepository consultRoomRepository;
-    private DoctorRepository doctorRepository;
-
+    private final AppointmentRepository appointmentRepository;
+    private final AppointmentMapper appointmentMapper;
+    private final PatientRepository patientRepository;
+    private final ConsultRoomRepository consultRoomRepository;
+    private final DoctorRepository doctorRepository;
 
     @Override
     public List<AppointmentDtoResponse> findAllAppointments() {
@@ -43,7 +42,6 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .map(appointmentMapper::toAppointmentDtoResponse)
                 .toList();
     }
-
     @Override
     public AppointmentDtoResponse findAppointmentById(Long id) {
         Appointment appointment = appointmentRepository.findById(id)
@@ -97,40 +95,28 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         return appointmentMapper.toAppointmentDtoResponse(appointmentRepository.save(appointment));
     }
-
     @Override
     public AppointmentDtoResponse updateAppointment(Long id, AppointmentDtoUpdateRequest appointmentDtoRequest) {
 
         Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new AppointmentNotFoundException("Appointment with ID: " + id + " Not Found"));
-
-
         if (appointment.getStatus() == AppointmentStatus.COMPLETED) {
             throw new AppointmentAlreadyCompletedException("Appointment is already marked as COMPLETED");
         }
-
         if (appointment.getStartTime().isBefore(LocalDateTime.now())) {
             throw new AppointmentInThePastException("Cannot modify an appointment that has already occurred");
         }
-
         validarRangoHorario(appointmentDtoRequest.startTime(), appointmentDtoRequest.endTime());
-
         appointmentMapper.updateAppointmentFromDto(appointmentDtoRequest, appointment);
-
         return appointmentMapper.toAppointmentDtoResponse(appointmentRepository.save(appointment));
-
     }
-
     @Override
     public void deleteAppointment(Long id) {
-
         if(!appointmentRepository.existsById(id)){
             throw new AppointmentNotFoundException("Appointment with ID: " + id + " not Found");
         }
-
         appointmentRepository.deleteById(id);
     }
-
     private void validarRangoHorario(LocalDateTime inicio, LocalDateTime fin) {
         if (inicio.isAfter(fin) || inicio.equals(fin)) {
             throw new InvalidTimeRangeException("Start time must be before end time");
