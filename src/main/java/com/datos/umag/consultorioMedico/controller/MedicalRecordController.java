@@ -43,6 +43,4 @@ public class MedicalRecordController {
         medicalRecordService.deleteMedicalRecord(id);
         return ResponseEntity.noContent().build();
     }
-
-
 }

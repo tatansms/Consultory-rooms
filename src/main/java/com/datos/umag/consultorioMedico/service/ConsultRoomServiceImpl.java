@@ -16,8 +16,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ConsultRoomServiceImpl implements ConsultRoomService {
 
-    private ConsultRoomRepository consultRoomRepository;
-    private ConsultRoomMapper consultRoomMapper;
+    private final ConsultRoomRepository consultRoomRepository; //
+    private final ConsultRoomMapper consultRoomMapper;     //
 
     @Override
     public List<ConsultRoomDtoResponse> findAllConsultRooms() {

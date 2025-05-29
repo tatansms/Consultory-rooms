@@ -1,6 +1,7 @@
 package com.datos.umag.consultorioMedico.security.service;
 
 import com.datos.umag.consultorioMedico.model.User;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Getter
 public class UserInfoDetail implements UserDetails {
 
     private final Long id;

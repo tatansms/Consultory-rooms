@@ -43,7 +43,4 @@ public class Doctor {
 
     @Column(nullable = false)
     private LocalTime availableTo;
-
-
-
 }

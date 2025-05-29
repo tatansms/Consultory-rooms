@@ -26,11 +26,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MedicalRecordServiceImpl implements MedicalRecordService {
 
-    private final ConsultRoomRepository consultRoomRepository;
-    private MedicalRecordRepository medicalRecordRepository;
-    private PatientRepository patientRepository;
-    private AppointmentRepository appointmentRepository;
-    private MedicalRecordMapper medicalRecordMapper;
+    private final MedicalRecordRepository medicalRecordRepository;
+    private final PatientRepository patientRepository;
+    private final AppointmentRepository appointmentRepository;
+    private final MedicalRecordMapper medicalRecordMapper;
+    private final ConsultRoomRepository consultRoomRepository; //
+
 
 
     @Override
@@ -39,64 +40,47 @@ public class MedicalRecordServiceImpl implements MedicalRecordService {
                 .map(medicalRecordMapper::toMedicalRecordDtoResponse)
                 .toList();
     }
-
     @Override
     public MedicalRecordDtoResponse findById(Long id) {
         MedicalRecord medicalRecord = medicalRecordRepository.findById(id)
                 .orElseThrow(() -> new MedicalRecordNotFoundException("Medical Record with ID: " + id + " Not Found"));
-
         return medicalRecordMapper.toMedicalRecordDtoResponse(medicalRecord);
-
     }
 
     @Override
     public List<MedicalRecordDtoResponse> findMedicalRecordsByPatient(Long id) {
-
         if(!patientRepository.existsById(id)){
             throw new PatientNotFoundException("Patient with ID: " + id + " Not Found");
         }
-
-        List<MedicalRecordDtoResponse> result = medicalRecordRepository.findByPatientId(id).stream()
+        List<MedicalRecordDtoResponse> result = medicalRecordRepository.findByPatient_IdPatient(id).stream()
                 .map(medicalRecordMapper::toMedicalRecordDtoResponse)
                 .toList();
-
         return result;
     }
 
     @Override
     public MedicalRecordDtoResponse saveMedicalRecord(MedicalRecordDtoRequest medicalRecordDtoRequest) {
-
         Patient patient = patientRepository.findById(medicalRecordDtoRequest.idPatient())
                 .orElseThrow(() -> new PatientNotFoundException("Patient with ID: " + medicalRecordDtoRequest.idPatient() + " Not Found"));
-
         Appointment appointment = appointmentRepository.findById(medicalRecordDtoRequest.idAppointment())
                 .orElseThrow(() -> new AppointmentNotFoundException("Appointment with ID: " + medicalRecordDtoRequest.idAppointment() + " Not Found"));
-
         if(appointment.getStatus() == AppointmentStatus.SCHEDULED){
             throw new AppointmentStillScheduledException("Appointment's status is Scheduled");
         }
-
         if(appointment.getStatus() == AppointmentStatus.CANCELED){
             throw new AppointmentCanceledException("Appointment has been canceled");
         }
-
         MedicalRecord medicalRecord = medicalRecordMapper.toEntity(medicalRecordDtoRequest);
         medicalRecord.setPatient(patient);
         medicalRecord.setAppointment(appointment);
-
         MedicalRecord savedEntity = medicalRecordRepository.save(medicalRecord);
         return medicalRecordMapper.toMedicalRecordDtoResponse(savedEntity);
-
     }
-
     @Override
     public void deleteMedicalRecord(Long id) {
-
         if(!medicalRecordRepository.existsById(id)){
             throw new MedicalRecordNotFoundException("Medical Record with ID: " + id + " Not Found");
         }
-
         medicalRecordRepository.deleteById(id);
-
     }
 }

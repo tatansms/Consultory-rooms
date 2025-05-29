@@ -255,7 +255,7 @@ class MedicalRecordRepositoryTest {
         medicalRecordRepository.save(medicalRecord);
         medicalRecordRepository.save(medicalRecord1);
 
-        List<MedicalRecord> results = medicalRecordRepository.findByPatientId(id);
+        List<MedicalRecord> results = medicalRecordRepository.findByPatient_IdPatient(id);
 
         assertEquals(2, results.size());
         assertFalse(results.isEmpty());

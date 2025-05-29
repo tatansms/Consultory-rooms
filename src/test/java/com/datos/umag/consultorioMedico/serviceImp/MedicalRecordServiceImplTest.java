@@ -105,7 +105,7 @@ class MedicalRecordServiceImplTest {
     void findMedicalRecordsByPatient_whenPatientExists_returnsList() {
         MedicalRecord rec = MedicalRecord.builder().idMedicalRecord(6L).build();
         when(patientRepository.existsById(1L)).thenReturn(true);
-        when(medicalRecordRepository.findByPatientId(1L)).thenReturn(List.of(rec));
+        when(medicalRecordRepository.findByPatient_IdPatient(1L)).thenReturn(List.of(rec));
         when(medicalRecordMapper.toMedicalRecordDtoResponse(rec)).thenReturn(dtoResponse);
 
         List<MedicalRecordDtoResponse> result = service.findMedicalRecordsByPatient(1L);
